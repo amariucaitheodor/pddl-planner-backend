@@ -11,14 +11,19 @@ class Planner(object):
     def on_post(self, req, resp):
         resp.status = falcon.HTTP_200  # This is the default status
 
+        if req.media is None:
+            resp.status = falcon.HTTP_400  # Bad request
+            resp.body = json.dumps({'error': 'Query parameters `domain` and `problem` are missing.'})
+            return
+
         if 'domain' not in req.media:
             resp.status = falcon.HTTP_400  # Bad request
-            resp.body = {"Domain was not found in the request parameters."}
+            resp.body = json.dumps({'error': 'Domain was not found in the query parameters.'})
             return
 
         if 'problem' not in req.media:
             resp.status = falcon.HTTP_400  # Bad request
-            resp.body = {"Problem was not found in the request parameters."}
+            resp.body = json.dumps({'error': 'Problem was not found in the query parameters.'})
             return
 
         with NamedTemporaryFile("w+") as plan_file, \
@@ -41,11 +46,9 @@ class Planner(object):
                      "--output", plan_file.name],
                     stderr=subprocess.STDOUT
                 )
-            # TODO: fix JSON creation
             except subprocess.CalledProcessError as e:
-                response_dict = {'error': e.output.decode(encoding='UTF-8').replace("\\n", '  ')}
-                resp.body = response_dict
-                print(type(e.output.decode(encoding='UTF-8').replace("\\n", '  ')))
+                # Maybe plan was not found etc. status should still be HTTP_200 OK
+                resp.body = json.dumps({'error': e.output.decode(encoding='UTF-8').replace("\\n", '  ')})
                 return
 
             # Process solution
@@ -56,6 +59,15 @@ class Planner(object):
                     plan_file.name,
                     str(planner_output))
             )
+            if response['parse_status'] == 'err':
+                # Parsing failed
+                resp.body = json.dumps(
+                    {
+                        'error': 'Parsing failed. Please check your domain and problem for syntax errors.',
+                        'parse_status': response['parse_status']
+                    }
+                )
+                return
 
             # Run validator on plan
             try:
@@ -65,14 +77,16 @@ class Planner(object):
                      problem_file.name,
                      plan_file.name]
                 )
-            # TODO: fix JSON creation
             except subprocess.CalledProcessError as e:
-                response_dict = {'error': e.output.decode(encoding='UTF-8').replace("\\n", '  ')}
-                resp.body = response_dict
+                # Maybe plan was not found etc. status should still be HTTP_200 OK
+                resp.body = json.dumps({'error': e.output.decode(encoding='UTF-8').replace("\\n", '  ')})
                 return
 
             # Add validator result to response
             response['validator'] = str(validator_output)
+
+            # Confirm everything is ok
+            response['error'] = False
 
             # Format response top-level strings
             for key in response.keys():
