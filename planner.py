@@ -31,23 +31,22 @@ class Planner(object):
             resp.body = json.dumps({'error': 'Problem was not found in the query parameters.'})
             return
 
+        self.solver_additional_parameter_value = ""
+        self.solver_additional_parameter = ""
         if 'solver' in req.media:
             if req.media['solver'] == "OPTIMAL":
-                # ./fast-downward.py --plan-file "OUTPUT.txt" domain.pddl problem.pddl --search "astar(blind())"
-                return
+                self.solver_path = "./solvers/optimal2018/fast-downward.py"
+                self.solver_additional_parameter = "--search"
+                self.solver_additional_parameter_value = "astar(blind())"
             elif req.media['solver'] == "AGILE2":
                 self.solver_path = "./solvers/agile2014/siw-then-bfsf"
             elif req.media['solver'] == "AGILE":
-                self.solver_path = "solvers/agile-balanced2018/bfws"
+                self.solver_path = "solvers/agile2018/bfws"
                 self.solver_additional_parameter = "--BFWS-f5"
                 self.solver_additional_parameter_value = "true"
-            elif req.media['solver'] == "BALANCED":
-                self.solver_path = "solvers/agile-balanced2018/bfws"
-                self.solver_additional_parameter = "--DUAL-BFWS"
-                self.solver_additional_parameter_value = "true"
         else:
-            self.solver_path = "solvers/agile-balanced2018/bfws"
-            self.solver_additional_parameter = "--DUAL-BFWS"
+            self.solver_path = "solvers/agile2018/bfws"
+            self.solver_additional_parameter = "--BFWS-f5"
             self.solver_additional_parameter_value = "true"
 
         with NamedTemporaryFile("w+") as plan_file, \
@@ -63,14 +62,25 @@ class Planner(object):
 
             # Run planner
             try:
-                planner_output = subprocess.check_output(
-                    [self.solver_path,
-                     "--domain", domain_file.name,
-                     "--problem", problem_file.name,
-                     "--output", plan_file.name,
-                     self.solver_additional_parameter, self.solver_additional_parameter_value],
-                    stderr=subprocess.STDOUT
-                )
+                if req.media['solver'] == "OPTIMAL":
+                    # Order of parameters matters here!
+                    planner_output = subprocess.check_output(
+                        [self.solver_path,
+                         "--plan-file", plan_file.name,
+                         domain_file.name,
+                         problem_file.name,
+                         self.solver_additional_parameter, self.solver_additional_parameter_value],
+                        stderr=subprocess.STDOUT
+                    )
+                else:
+                    planner_output = subprocess.check_output(
+                        [self.solver_path,
+                         "--domain", domain_file.name,
+                         "--problem", problem_file.name,
+                         "--output", plan_file.name,
+                         self.solver_additional_parameter, self.solver_additional_parameter_value],
+                        stderr=subprocess.STDOUT
+                    )
             except subprocess.CalledProcessError as e:
                 # Maybe plan was not found etc. status should still be HTTP_200 OK
                 resp.body = json.dumps({'error': e.output.decode(encoding='UTF-8').replace("\\n", '  ')})

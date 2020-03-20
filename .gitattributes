@@ -1,0 +1,1 @@
+solvers/optimal2018/builds/release/bin/downward filter=lfs diff=lfs merge=lfs -text

@@ -9,16 +9,15 @@ Lightweight implementation of [cloud PDDL planner](https://bitbucket.org/plannin
 - Only essential planning utilities were retained
 - Codebase was updated from Python 2 to Python 3
 - Designed to work for specific origins only (see `Access-Control-Allow-Origin` in `planner.py`), therefore throttling was removed
-- Offers 4 different multi-purpose solvers
+- Offers 3 different multi-purpose solvers
 
 ### API endpoints:
 - `/solve-and-validate` accepts parameters `domain` (required), `problem` (required) and `solver` (optional, default is `BALANCED`)
 
 ### Acknowledgements:
 - `OPTIMAL` solver is [Fast-Downward](https://bitbucket.org/ipc2018-classical/team23/src/ipc-2018-seq-opt/) by [many contributors](http://hg.fast-downward.org/file/tip/README.md).
-- `BALANCED` solver is [LAPKT-DUAL-BFWS](https://ipc2018-classical.bitbucket.io/planner-abstracts/teams_1_20_30_31_36_47.pdf) by Nir Lipovetzky, Miquel Ramírez, Guillem Francès, and Hector Geffner. [Project](https://github.com/nirlipo/BFWS-public) by Nir Lipovetzky and Hector Geffner.
 - `AGILE` solver is [LAPKT-BFWS-Preference](https://ipc2018-classical.bitbucket.io/planner-abstracts/teams_1_20_30_31_36_47.pdf) by Nir Lipovetzky, Miquel Ramírez, Guillem Francès, and Hector Geffner. [Project](https://github.com/nirlipo/BFWS-public) by Nir Lipovetzky and Hector Geffner.
 - `AGILE2` solver is [SIW+-then-BFSf](https://github.com/LAPKT-dev/LAPKT-public/tree/master/planners/siw_plus-then-bfs_f-ffparser), as part of a configuration put forward by Nir Lipovetzky, Miquel Ramirez, and Christian Muise from the LAPKT planning framework. This configuration also includes a validator used by all solvers.
 
-### Contributors to this backend project:
+### Contributors:
 - Theodor Amariucai

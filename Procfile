@@ -1,1 +1,1 @@
-web: gunicorn planner:app --limit-request-line 0
+web: gunicorn planner:app --limit-request-line 0 --timeout 180

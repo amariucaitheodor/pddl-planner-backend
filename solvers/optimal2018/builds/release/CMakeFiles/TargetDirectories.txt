@@ -1,0 +1,6 @@
+/home/theo/Files/GitHub/pddl-planner-backend/solvers/optimal2018/builds/release/CMakeFiles/rebuild_cache.dir
+/home/theo/Files/GitHub/pddl-planner-backend/solvers/optimal2018/builds/release/CMakeFiles/translate.dir
+/home/theo/Files/GitHub/pddl-planner-backend/solvers/optimal2018/builds/release/CMakeFiles/edit_cache.dir
+/home/theo/Files/GitHub/pddl-planner-backend/solvers/optimal2018/builds/release/search/CMakeFiles/rebuild_cache.dir
+/home/theo/Files/GitHub/pddl-planner-backend/solvers/optimal2018/builds/release/search/CMakeFiles/downward.dir
+/home/theo/Files/GitHub/pddl-planner-backend/solvers/optimal2018/builds/release/search/CMakeFiles/edit_cache.dir
