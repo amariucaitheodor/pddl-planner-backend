@@ -8,6 +8,11 @@ from processing.solution_processor import process_solution
 
 class Planner(object):
 
+    def __init__(self):
+        self.solver_additional_parameter_value = None
+        self.solver_additional_parameter = None
+        self.solver_path = None
+
     def on_post(self, req, resp):
         resp.status = falcon.HTTP_200  # This is the default status
 
@@ -26,6 +31,25 @@ class Planner(object):
             resp.body = json.dumps({'error': 'Problem was not found in the query parameters.'})
             return
 
+        if 'mode' in req.media:
+            if req.media['mode'] == "OPTIMAL":
+                # ./fast-downward.py --plan-file "OUTPUT.txt" domain.pddl problem.pddl --search "astar(blind())"
+                return
+            elif req.media['mode'] == "AGILE2":
+                self.solver_path = "./solvers/agile2014/siw-then-bfsf"
+            elif req.media['mode'] == "AGILE":
+                self.solver_path = "solvers/agile-balanced2018/bfws"
+                self.solver_additional_parameter = "--BFWS-f5"
+                self.solver_additional_parameter_value = "true"
+            elif req.media['mode'] == "BALANCED":
+                self.solver_path = "solvers/agile-balanced2018/bfws"
+                self.solver_additional_parameter = "--DUAL-BFWS"
+                self.solver_additional_parameter_value = "true"
+        else:
+            self.solver_path = "solvers/agile-balanced2018/bfws"
+            self.solver_additional_parameter = "--DUAL-BFWS"
+            self.solver_additional_parameter_value = "true"
+
         with NamedTemporaryFile("w+") as plan_file, \
                 NamedTemporaryFile("w+") as domain_file, \
                 NamedTemporaryFile("w+") as problem_file:
@@ -40,10 +64,11 @@ class Planner(object):
             # Run planner
             try:
                 planner_output = subprocess.check_output(
-                    ["./binaries/siw-then-bfsf",
+                    [self.solver_path,
                      "--domain", domain_file.name,
                      "--problem", problem_file.name,
-                     "--output", plan_file.name],
+                     "--output", plan_file.name,
+                     self.solver_additional_parameter, self.solver_additional_parameter_value],
                     stderr=subprocess.STDOUT
                 )
             except subprocess.CalledProcessError as e:
@@ -72,7 +97,7 @@ class Planner(object):
             # Run validator on plan
             try:
                 validator_output = subprocess.check_output(
-                    ["./binaries/validate",
+                    ["./solvers/agile2014/validate",
                      domain_file.name,
                      problem_file.name,
                      plan_file.name]
