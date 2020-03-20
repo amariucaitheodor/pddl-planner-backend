@@ -31,17 +31,17 @@ class Planner(object):
             resp.body = json.dumps({'error': 'Problem was not found in the query parameters.'})
             return
 
-        if 'mode' in req.media:
-            if req.media['mode'] == "OPTIMAL":
+        if 'solver' in req.media:
+            if req.media['solver'] == "OPTIMAL":
                 # ./fast-downward.py --plan-file "OUTPUT.txt" domain.pddl problem.pddl --search "astar(blind())"
                 return
-            elif req.media['mode'] == "AGILE2":
+            elif req.media['solver'] == "AGILE2":
                 self.solver_path = "./solvers/agile2014/siw-then-bfsf"
-            elif req.media['mode'] == "AGILE":
+            elif req.media['solver'] == "AGILE":
                 self.solver_path = "solvers/agile-balanced2018/bfws"
                 self.solver_additional_parameter = "--BFWS-f5"
                 self.solver_additional_parameter_value = "true"
-            elif req.media['mode'] == "BALANCED":
+            elif req.media['solver'] == "BALANCED":
                 self.solver_path = "solvers/agile-balanced2018/bfws"
                 self.solver_additional_parameter = "--DUAL-BFWS"
                 self.solver_additional_parameter_value = "true"
