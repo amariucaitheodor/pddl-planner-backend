@@ -168,7 +168,7 @@ class Planner(object):
 
 class HandleCORS(object):
     def __init__(self):
-        self.allowed_origins = 'https://finitech-sdp.github.io'
+        self.allowed_origins = 'https://amariucaitheodor.github.io'
 
         logger.debug('creating an instance of HandleCORS with allowed origins {}'.format(self.allowed_origins))
 

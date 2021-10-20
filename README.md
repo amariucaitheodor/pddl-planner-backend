@@ -2,7 +2,7 @@
 
 Lightweight implementation of [cloud PDDL planner](https://bitbucket.org/planning-researchers/cloud-solver/src/master/) by Christian Muise, Simon Vernhes and Florian Pommerening.
 
-### [See it in action!](https://finitech-sdp.github.io/operations-monitor/#/)
+### [See it in action!](https://amariucaitheodor.github.io/operations-monitor/#/)
 
 ### Features:
 - Node.js was replaced with [Falcon](https://falconframework.org/#), a [blazing fast](https://falconframework.org/#sectionBenchmarks), minimalist Python web API framework
